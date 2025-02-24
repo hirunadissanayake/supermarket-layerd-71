@@ -1,40 +1,42 @@
 package lk.ijse.gdse71.supermarketfx.dao.custom.impl;
 
+import lk.ijse.gdse71.supermarketfx.dao.custom.CustomerDAO;
 import lk.ijse.gdse71.supermarketfx.dto.CustomerDto;
 import lk.ijse.gdse71.supermarketfx.dao.SQLUtil;
+import lk.ijse.gdse71.supermarketfx.entity.Customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerDAOImpl {
-    public ArrayList<CustomerDto> getAllCustomers() throws SQLException {
+public class CustomerDAOImpl implements CustomerDAO {
+    public ArrayList<Customer> getAll() throws SQLException {
         ResultSet rst = SQLUtil.execute("select * from Customer");
-        ArrayList<CustomerDto> customerDtos = new ArrayList<>();
+        ArrayList<Customer> customerEntity = new ArrayList<>();
 
         while (rst.next()) {
-            CustomerDto customerDto = new CustomerDto(
+            Customer customerDto = new Customer(
                     rst.getString(1),
                     rst.getString(2),
                     rst.getString(3),
                     rst.getString(4),
                     rst.getString(5)
             );
-            customerDtos.add(customerDto);
+            customerEntity.add(customerDto);
         }
-        return customerDtos;
+        return customerEntity;
     }
 
-    public boolean saveCustomer(CustomerDto customerDto) throws SQLException {
+    public boolean save(Customer customerEntity) throws SQLException {
         return SQLUtil.execute("insert into Customer values(?,?,?,?,?)",
-                customerDto.getCustomerId(),
-                customerDto.getCustomerName(),
-                customerDto.getNic(),
-                customerDto.getEmail(),
-                customerDto.getPhone()
+                customerEntity.getCustomerId(),
+                customerEntity.getCustomerName(),
+                customerEntity.getNic(),
+                customerEntity.getEmail(),
+                customerEntity.getPhone()
         );
     }
-    public String getNextCustomerId() throws SQLException {
+    public String getNextId() throws SQLException {
         ResultSet rst = SQLUtil.execute("select customer_id from Customer order by customer_id desc limit 1");
 
         if (rst.next()) {
@@ -69,17 +71,17 @@ public class CustomerDAOImpl {
         return null;
     }
 
-    public boolean deleteCustomer(String customerId) throws SQLException {
+    public boolean delete(String customerId) throws SQLException {
         return SQLUtil.execute("delete from Customer where customer_id = ?",customerId);
     }
 
-    public boolean updateCustomer(CustomerDto customerDto) throws SQLException {
+    public boolean update(Customer customerEntity) throws SQLException {
         return  SQLUtil.execute("update Customer set name=?, nic =?, email=?, phone=? where customer_id =?",
-                customerDto.getCustomerName(),
-                customerDto.getNic(),
-                customerDto.getEmail(),
-                customerDto.getPhone(),
-                customerDto.getCustomerId()
+                customerEntity.getCustomerName(),
+                customerEntity.getNic(),
+                customerEntity.getEmail(),
+                customerEntity.getPhone(),
+                customerEntity.getCustomerId()
         );
     }
 }

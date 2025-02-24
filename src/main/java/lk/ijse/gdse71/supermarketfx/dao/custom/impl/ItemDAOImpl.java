@@ -1,14 +1,16 @@
 package lk.ijse.gdse71.supermarketfx.dao.custom.impl;
 
+import lk.ijse.gdse71.supermarketfx.dao.custom.ItemDAO;
 import lk.ijse.gdse71.supermarketfx.dto.ItemDto;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDetailsDto;
 import lk.ijse.gdse71.supermarketfx.dao.SQLUtil;
+import lk.ijse.gdse71.supermarketfx.entity.Item;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ItemDAOImpl {
+public class ItemDAOImpl implements ItemDAO {
     public ArrayList<String> getAllItemIds() throws SQLException {
         ResultSet rst = SQLUtil.execute("select item_id from Item");
 
@@ -42,24 +44,24 @@ public class ItemDAOImpl {
         );
     }
 
-    public ArrayList<ItemDto> getAllItems() throws SQLException {
+    public ArrayList<Item> getAll() throws SQLException {
         ResultSet rst = SQLUtil.execute("select * from Item");
 
-        ArrayList<ItemDto> itemDtos = new ArrayList<>();
+        ArrayList<Item> itemDtos = new ArrayList<>();
         while (rst.next()){
-            ItemDto itemDto = new ItemDto(
+            Item itemEntity = new Item(
                     rst.getString(1),
                     rst.getString(2),
                     rst.getInt(3),
                     rst.getDouble(4)
             );
-            itemDtos.add(itemDto);
+            itemDtos.add(itemEntity);
         }
         return itemDtos;
     }
 
 
-    public String getNextItemId() throws SQLException {
+    public String getNextId() throws SQLException {
         ResultSet rst = SQLUtil.execute("select item_id from Item order by item_id desc limit 1");
         if (rst.next()){
             String lastId = rst.getString(1);
@@ -71,26 +73,26 @@ public class ItemDAOImpl {
         return "I001";
     }
 
-    public boolean saveItem(ItemDto itemDto) throws SQLException {
+    public boolean save(Item itemEntity) throws SQLException {
         return SQLUtil.execute("insert into Item values (?,?,?,?)",
-                itemDto.getItemId(),
-                itemDto.getItemName(),
-                itemDto.getQuantity(),
-                itemDto.getUnitPrice()
+                itemEntity.getItemId(),
+                itemEntity.getItemName(),
+                itemEntity.getQuantity(),
+                itemEntity.getUnitPrice()
 
         );
     }
 
-    public boolean deleteItem(String itemId) throws SQLException {
+    public boolean delete(String itemId) throws SQLException {
         return SQLUtil.execute("delete from Item where item_id = ?",itemId);
     }
 
-    public boolean updateItem(ItemDto itemDto) throws SQLException {
+    public boolean update(Item itemEntity) throws SQLException {
         return  SQLUtil.execute("update Item set name =?, quantity = ?, price = ? where item_id = ?",
-                    itemDto.getItemName(),
-                    itemDto.getQuantity(),
-                    itemDto.getUnitPrice(),
-                    itemDto.getItemId()
+                itemEntity.getItemName(),
+                itemEntity.getQuantity(),
+                itemEntity.getUnitPrice(),
+                itemEntity.getItemId()
                 );
 
     }

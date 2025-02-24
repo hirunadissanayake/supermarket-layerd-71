@@ -8,6 +8,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import lk.ijse.gdse71.supermarketfx.bo.BOFactory;
+import lk.ijse.gdse71.supermarketfx.bo.custom.CustomerBO;
+import lk.ijse.gdse71.supermarketfx.bo.custom.ItemBO;
+import lk.ijse.gdse71.supermarketfx.bo.custom.OrdersBO;
 import lk.ijse.gdse71.supermarketfx.dto.CustomerDto;
 import lk.ijse.gdse71.supermarketfx.dto.ItemDto;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDetailsDto;
@@ -86,9 +90,10 @@ public class OrderController implements Initializable {
     @FXML
     private TableView<CartTm> TblOrder;
 
-    private final OrderDAOImpl orderDAOImpl = new OrderDAOImpl();
-    private final CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
-    private final ItemDAOImpl itemDAOImpl = new ItemDAOImpl();
+    OrdersBO ordersBO = (OrdersBO) BOFactory.getInstance().getBO(BOFactory.BOTypes.ORDER);
+    CustomerBO customerBO = (CustomerBO) BOFactory.getInstance().getBO(BOFactory.BOTypes.CUSTOMER);
+    ItemBO itemBO = (ItemBO) BOFactory.getInstance().getBO(BOFactory.BOTypes.ITEM);
+
 
     private final ObservableList<CartTm> cartTms = FXCollections.observableArrayList();
 
@@ -189,7 +194,7 @@ public class OrderController implements Initializable {
         );
         //boolean isSaved = orderModel.saveOrder(orderDto);
         System.out.println("Saving order: " + orderDto);
-        boolean isSaved = orderDAOImpl.saveOrder(orderDto);
+        boolean isSaved = ordersBO.saveOrder(orderDto);
         System.out.println("Order saved status: " + isSaved);
 
         if (isSaved){
@@ -209,7 +214,7 @@ public class OrderController implements Initializable {
     @FXML
     void CmbCustomerOnClickAction(ActionEvent event) throws SQLException {
         String selectedCustId = CmbCustId.getSelectionModel().getSelectedItem();
-        CustomerDto customerDto = customerDAOImpl.findById(selectedCustId);
+        CustomerDto customerDto = customerBO.findById(selectedCustId);
 
         if (customerDto != null) {
             LblCustName.setText(customerDto.getCustomerName());
@@ -219,7 +224,7 @@ public class OrderController implements Initializable {
     @FXML
     void CmbItemOnClickAction(ActionEvent event) throws SQLException {
         String selecteItemId = CmbItemId.getSelectionModel().getSelectedItem();
-        ItemDto itemDto = itemDAOImpl.findById(selecteItemId);
+        ItemDto itemDto = itemBO.findById(selecteItemId);
 
         if (itemDto != null) {
             LblItemName.setText(itemDto.getItemName());
@@ -240,7 +245,7 @@ public class OrderController implements Initializable {
     }
 
     private void refreshPage() throws SQLException {
-        LblOrder.setText(orderDAOImpl.getNextOrderId());
+        LblOrder.setText(ordersBO.getNextOrderId());
         LblOrderDate.setText(LocalDate.now().toString());
 
         loadCustomerIds();
@@ -259,14 +264,14 @@ public class OrderController implements Initializable {
     }
 
     private void loadItemId() throws SQLException {
-        ArrayList<String> itemIds = itemDAOImpl.getAllItemIds();
+        ArrayList<String> itemIds = itemBO.getAllItemIds();
         ObservableList<String> observableList = FXCollections.observableArrayList();
         observableList.addAll(itemIds);
         CmbItemId.setItems(observableList);
     }
 
     private void loadCustomerIds() throws SQLException {
-        ArrayList<String> customerIds = customerDAOImpl.getAllCustomerIds();
+        ArrayList<String> customerIds = customerBO.getAllCustomerIds();
         ObservableList<String> observableList = FXCollections.observableArrayList();
         observableList.addAll(customerIds);
         CmbCustId.setItems(observableList);

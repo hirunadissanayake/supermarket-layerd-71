@@ -1,17 +1,31 @@
 package lk.ijse.gdse71.supermarketfx.dao.custom.impl;
 
+import lk.ijse.gdse71.supermarketfx.dao.custom.OrdersDAO;
 import lk.ijse.gdse71.supermarketfx.db.DBConnection;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDto;
 import lk.ijse.gdse71.supermarketfx.dao.SQLUtil;
+import lk.ijse.gdse71.supermarketfx.entity.Order;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class OrderDAOImpl {
+public class OrderDAOImpl implements OrdersDAO {
 
-    private final OrderDetailsDAOImpl orderDetailsDAOImpl = new OrderDetailsDAOImpl();
-    public String getNextOrderId() throws SQLException {
+      OrderDetailsDAOImpl orderDetailsDAOImpl = new OrderDetailsDAOImpl();
+
+    @Override
+    public ArrayList<Order> getAll() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean save(Order dto) throws SQLException {
+        return false;
+    }
+
+    public String getNextId() throws SQLException {
         ResultSet rst = SQLUtil.execute("select order_id from Orders order by order_id desc limit 1");
 
         if (rst.next()) {
@@ -24,31 +38,15 @@ public class OrderDAOImpl {
         return "O001";
     }
 
-    public boolean saveOrder(OrderDto orderDto) throws SQLException {
-        Connection connection = DBConnection.getInstance().getConnection();
-        try{
-            connection.setAutoCommit(false);
-            boolean isOrderSaved = SQLUtil.execute("insert into Orders values (?,?,?)",
-                    orderDto.getOrderId(),
-                    orderDto.getCustomerId(),
-                    orderDto.getOrderDate()
-            );
-            if(isOrderSaved){
-                boolean isOrderDetailsSaved = orderDetailsDAOImpl.saveOrderDetailsList(orderDto.getOrderDetailsDtos());
-                if(isOrderDetailsSaved){
-                    connection.commit();
-                    return true;
-                }
-
-            }
-            connection.rollback();
-            return false;
-        } catch (Exception e) {
-            connection.rollback();
-            e.printStackTrace();
-            return false;
-        }finally {
-            connection.setAutoCommit(true);
-        }
+    @Override
+    public boolean delete(String Id) throws SQLException {
+        return false;
     }
+
+    @Override
+    public boolean update(Order dto) throws SQLException {
+        return false;
+    }
+
+
 }

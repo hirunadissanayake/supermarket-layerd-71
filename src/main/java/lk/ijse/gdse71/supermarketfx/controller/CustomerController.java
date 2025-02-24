@@ -14,6 +14,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import lk.ijse.gdse71.supermarketfx.bo.BOFactory;
+import lk.ijse.gdse71.supermarketfx.bo.custom.CustomerBO;
+import lk.ijse.gdse71.supermarketfx.dao.DAOFactory;
+import lk.ijse.gdse71.supermarketfx.dao.custom.CustomerDAO;
 import lk.ijse.gdse71.supermarketfx.dto.CustomerDto;
 import lk.ijse.gdse71.supermarketfx.view.tdm.CustomerTm;
 import lk.ijse.gdse71.supermarketfx.dao.custom.impl.CustomerDAOImpl;
@@ -106,6 +110,7 @@ public class CustomerController implements Initializable {
             BtnUpdate.setDisable(false);
         }
     }
+    CustomerBO customerBO = (CustomerBO) BOFactory.getInstance().getBO(BOFactory.BOTypes.CUSTOMER);
 
     @FXML
     void DeleteOnClickAction(ActionEvent event) throws SQLException {
@@ -115,7 +120,7 @@ public class CustomerController implements Initializable {
         Optional<ButtonType> optionalButtonType = alert.showAndWait();
 
         if (optionalButtonType.isPresent() && optionalButtonType.get() == ButtonType.YES) {
-            boolean isDeleted = customerDAOImpl.deleteCustomer(customerId);
+            boolean isDeleted = customerBO.deleteCustomer(customerId);
             if(isDeleted){
                 refreshPage();
                 new Alert(Alert.AlertType.INFORMATION,"Customer Deleted").show();
@@ -197,7 +202,7 @@ public class CustomerController implements Initializable {
         if (isValidEmail && isValidPhone && isValidName && isValidNic){
             CustomerDto customerDto = new CustomerDto(customerId, customerName, nic, email, phone);
 
-            boolean isSaved = customerDAOImpl.saveCustomer(customerDto);
+            boolean isSaved = customerBO.saveCustomer(customerDto);
             if (isSaved){
                 refreshPage();
                 new Alert(Alert.AlertType.INFORMATION,"Customer Saved....").show();
@@ -251,7 +256,7 @@ public class CustomerController implements Initializable {
             CustomerDto customerDto = new CustomerDto(
                     customerId, customerName, nic, email, phone
             );
-            boolean isUpdate = customerDAOImpl.updateCustomer(customerDto);
+            boolean isUpdate = customerBO.updateCustomer(customerDto);
             if (isUpdate){
                 refreshPage();
                 new Alert(Alert.AlertType.INFORMATION,"Customer Updated....").show();
@@ -294,7 +299,7 @@ public class CustomerController implements Initializable {
     CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
 
     private void loadTableData() throws SQLException {
-        ArrayList<CustomerDto> customerDtos = customerDAOImpl.getAllCustomers();
+        ArrayList<CustomerDto> customerDtos = customerBO.getAllCustomers();
 
         ObservableList<CustomerTm> customerTms = FXCollections.observableArrayList();
 
@@ -312,7 +317,7 @@ public class CustomerController implements Initializable {
     }
 
     private void loadNextCustomerId() throws SQLException {
-        String nextCustomerId = customerDAOImpl.getNextCustomerId();
+        String nextCustomerId = customerBO.getNextCustomerId();
         LblCustId.setText(nextCustomerId);
     }
 

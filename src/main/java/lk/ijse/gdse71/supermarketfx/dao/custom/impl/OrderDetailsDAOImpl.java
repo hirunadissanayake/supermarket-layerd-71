@@ -1,37 +1,42 @@
 package lk.ijse.gdse71.supermarketfx.dao.custom.impl;
 
+import lk.ijse.gdse71.supermarketfx.dao.custom.OrderDetailsDAO;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDetailsDto;
 import lk.ijse.gdse71.supermarketfx.dao.SQLUtil;
+import lk.ijse.gdse71.supermarketfx.entity.OrderDetails;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class OrderDetailsDAOImpl {
+public class OrderDetailsDAOImpl implements OrderDetailsDAO {
 
-     private final ItemDAOImpl itemDAOImpl = new ItemDAOImpl();
+    @Override
+    public ArrayList<OrderDetails> getAll() throws SQLException {
+        return null;
+    }
 
-     public boolean saveOrderDetailsList(ArrayList<OrderDetailsDto> orderDetailsDtos) throws SQLException {
-         for (OrderDetailsDto orderDetailsDto : orderDetailsDtos) {
-             boolean isOrderDetailsSaved = saveOrderDetail(orderDetailsDto);
-
-             if (!isOrderDetailsSaved) {
-                 return false;
-             }
-             boolean isItemUpdated = itemDAOImpl.reduceQty(orderDetailsDto);
-             if (!isItemUpdated) {
-                 return false;
-             }
-         }
-         return true;
-     }
-
-    private boolean saveOrderDetail(OrderDetailsDto orderDetailsDto) throws SQLException {
+    public boolean save(OrderDetails orderDetailsEntity) throws SQLException {
          return SQLUtil.execute(
                  "insert into OrderDetails values (?,?,?,?)",
-                 orderDetailsDto.getOrderId(),
-                 orderDetailsDto.getItemId(),
-                 orderDetailsDto.getQtyOnHand(),
-                 orderDetailsDto.getPrice()
+                 orderDetailsEntity.getOrderId(),
+                 orderDetailsEntity.getItemId(),
+                 orderDetailsEntity.getQtyOnHand(),
+                 orderDetailsEntity.getPrice()
          );
+    }
+
+    @Override
+    public String getNextId() throws SQLException {
+        return "";
+    }
+
+    @Override
+    public boolean delete(String Id) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public boolean update(OrderDetails dto) throws SQLException {
+        return false;
     }
 }
