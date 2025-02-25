@@ -15,14 +15,14 @@ public class OrderDetailsDAOImpl implements OrderDetailsDAO {
         return null;
     }
 
-    public boolean save(OrderDetails orderDetailsEntity) throws SQLException {
-         return SQLUtil.execute(
-                 "insert into OrderDetails values (?,?,?,?)",
-                 orderDetailsEntity.getOrderId(),
-                 orderDetailsEntity.getItemId(),
-                 orderDetailsEntity.getQtyOnHand(),
-                 orderDetailsEntity.getPrice()
-         );
+    public boolean save(OrderDetails entity) throws SQLException {
+        return SQLUtil.execute(
+                "INSERT INTO OrderDetails (order_id, item_id, quantity, price) VALUES (?, ?, ?, ?)",
+                entity.getOrderId(),
+                entity.getItemId(),
+                entity.getQtyOnHand(),
+                entity.getPrice()
+        );
     }
 
     @Override
