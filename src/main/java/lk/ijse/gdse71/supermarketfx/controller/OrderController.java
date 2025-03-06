@@ -16,6 +16,8 @@ import lk.ijse.gdse71.supermarketfx.dto.CustomerDto;
 import lk.ijse.gdse71.supermarketfx.dto.ItemDto;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDetailsDto;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDto;
+import lk.ijse.gdse71.supermarketfx.entity.Customer;
+import lk.ijse.gdse71.supermarketfx.entity.Item;
 import lk.ijse.gdse71.supermarketfx.view.tdm.CartTm;
 import lk.ijse.gdse71.supermarketfx.dao.custom.impl.CustomerDAOImpl;
 import lk.ijse.gdse71.supermarketfx.dao.custom.impl.ItemDAOImpl;
@@ -26,6 +28,8 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OrderController implements Initializable {
@@ -214,22 +218,22 @@ public class OrderController implements Initializable {
     @FXML
     void CmbCustomerOnClickAction(ActionEvent event) throws SQLException {
         String selectedCustId = CmbCustId.getSelectionModel().getSelectedItem();
-        CustomerDto customerDto = customerBO.findById(selectedCustId);
+        Optional<Customer> customer = customerBO.findById(selectedCustId);
 
-        if (customerDto != null) {
-            LblCustName.setText(customerDto.getCustomerName());
+        if (customer != null) {
+            LblCustName.setText(customer.get().getCustomerName());
         }
     }
 
     @FXML
     void CmbItemOnClickAction(ActionEvent event) throws SQLException {
         String selecteItemId = CmbItemId.getSelectionModel().getSelectedItem();
-        ItemDto itemDto = itemBO.findById(selecteItemId);
+        Optional<Item> item = itemBO.findById(selecteItemId);
 
-        if (itemDto != null) {
-            LblItemName.setText(itemDto.getItemName());
-            LblQty.setText(String.valueOf(itemDto.getQuantity()));
-            LblUnitPrice.setText(String.valueOf(itemDto.getUnitPrice()));
+        if (item != null) {
+            LblItemName.setText(item.get().getItemName());
+            LblQty.setText(String.valueOf(item.get().getQuantity()));
+            LblUnitPrice.setText(String.valueOf(item.get().getUnitPrice()));
         }
     }
 
@@ -264,14 +268,14 @@ public class OrderController implements Initializable {
     }
 
     private void loadItemId() throws SQLException {
-        ArrayList<String> itemIds = itemBO.getAllItemIds();
+        List<String> itemIds = itemBO.getAllItemIds();
         ObservableList<String> observableList = FXCollections.observableArrayList();
         observableList.addAll(itemIds);
         CmbItemId.setItems(observableList);
     }
 
     private void loadCustomerIds() throws SQLException {
-        ArrayList<String> customerIds = customerBO.getAllCustomerIds();
+        List<String> customerIds = customerBO.getAllCustomerIds();
         ObservableList<String> observableList = FXCollections.observableArrayList();
         observableList.addAll(customerIds);
         CmbCustId.setItems(observableList);

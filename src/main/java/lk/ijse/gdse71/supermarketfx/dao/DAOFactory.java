@@ -15,18 +15,19 @@ public class DAOFactory {
     public enum DAOTypes{
         CUSTOMER,ORDERS,ITEM,ORDER_DETAILS,QUERY
     }
-    public SuperDAO getDAO(DAOTypes daoType){
+    @SuppressWarnings("unchecked")
+    public <T extends SuperDAO> T getDAO(DAOTypes daoType){
         switch (daoType){
             case CUSTOMER:
-                return new CustomerDAOImpl();
+                return (T) new CustomerDAOImpl();
             case ITEM:
-                return new ItemDAOImpl();
+                return (T) new ItemDAOImpl();
             case ORDERS:
-                return new OrderDAOImpl();
+                return (T) new OrderDAOImpl();
             case ORDER_DETAILS:
-                return new OrderDetailsDAOImpl();
+                return (T) new OrderDetailsDAOImpl();
             case QUERY:
-                return new QueryDAOImpl();
+                return (T) new QueryDAOImpl();
             default:
                 return null;
         }

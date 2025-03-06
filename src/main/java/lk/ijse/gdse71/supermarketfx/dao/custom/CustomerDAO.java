@@ -6,6 +6,8 @@ import lk.ijse.gdse71.supermarketfx.entity.Customer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public interface CustomerDAO extends CrudDAO<Customer> {
 //     ArrayList<CustomerDto> getAllCustomers() throws SQLException;
@@ -14,8 +16,8 @@ public interface CustomerDAO extends CrudDAO<Customer> {
 //     boolean deleteCustomer(String customerId) throws SQLException;
 //     boolean updateCustomer(CustomerDto customerDto) throws SQLException;
 
-     ArrayList<String> getAllCustomerIds() throws SQLException;
-     CustomerDto findById(String selectedCustId) throws SQLException;
+     List<String> getAllCustomerIds() throws SQLException;
+     Optional<Customer> findById(String selectedCustId) throws SQLException;
 
 
 

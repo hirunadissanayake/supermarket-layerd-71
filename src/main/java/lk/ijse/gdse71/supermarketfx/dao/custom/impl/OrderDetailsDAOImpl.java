@@ -18,17 +18,19 @@ public class OrderDetailsDAOImpl implements OrderDetailsDAO {
     public boolean save(OrderDetails entity) throws SQLException {
         return SQLUtil.execute(
                 "INSERT INTO OrderDetails (order_id, item_id, quantity, price) VALUES (?, ?, ?, ?)",
-                entity.getOrderId(),
-                entity.getItemId(),
+                entity.getOrder().getOrderId(),
+                entity.getItem().getItemId(),
                 entity.getQtyOnHand(),
                 entity.getPrice()
         );
     }
 
     @Override
-    public String getNextId() throws SQLException {
+    public String getLastId() throws SQLException {
         return "";
     }
+
+
 
     @Override
     public boolean delete(String Id) throws SQLException {

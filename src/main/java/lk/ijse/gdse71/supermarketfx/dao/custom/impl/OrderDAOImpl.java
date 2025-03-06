@@ -1,19 +1,17 @@
 package lk.ijse.gdse71.supermarketfx.dao.custom.impl;
 
+import lk.ijse.gdse71.supermarketfx.config.FactoryConfiguration;
 import lk.ijse.gdse71.supermarketfx.dao.custom.OrdersDAO;
-import lk.ijse.gdse71.supermarketfx.db.DBConnection;
-import lk.ijse.gdse71.supermarketfx.dto.OrderDto;
-import lk.ijse.gdse71.supermarketfx.dao.SQLUtil;
 import lk.ijse.gdse71.supermarketfx.entity.Order;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class OrderDAOImpl implements OrdersDAO {
-
-      OrderDetailsDAOImpl orderDetailsDAOImpl = new OrderDetailsDAOImpl();
+    private final FactoryConfiguration factoryConfiguration = FactoryConfiguration.getInstance();
 
     @Override
     public ArrayList<Order> getAll() throws SQLException {
@@ -25,7 +23,7 @@ public class OrderDAOImpl implements OrdersDAO {
         return false;
     }
 
-    public String getNextId() throws SQLException {
+    /*public String getNextId() throws SQLException {
         ResultSet rst = SQLUtil.execute("SELECT MAX(order_id) FROM Orders");
 
         if (rst.next()) {
@@ -37,7 +35,16 @@ public class OrderDAOImpl implements OrdersDAO {
         }
         return "O001";  // First order
     }
-
+*/
+    public String getLastId() throws SQLException {
+        try (Session session = factoryConfiguration.getSession()){
+            Query<String> query = session.createQuery("select o.orderId FROM Order o ORDER BY o.orderId DESC", String.class);
+            query.getMaxResults();
+            return query.uniqueResult();
+        }catch (Exception e){
+            throw new SQLException("Error` while executing query",e);
+        }
+    }
     @Override
     public boolean delete(String Id) throws SQLException {
         return false;
@@ -49,4 +56,26 @@ public class OrderDAOImpl implements OrdersDAO {
     }
 
 
+    @Override
+    public Optional<Order> findById(String orderId) {
+        if (orderId == null || orderId.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        try(Session session = factoryConfiguration.getSession()) {
+            Order order = session.get( Order.class, orderId);
+            return Optional.ofNullable(order);
+        }catch (Exception e){
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean saveOrderWithOrderDetails(Session session, Order order) {
+        try {
+            session.merge(order);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

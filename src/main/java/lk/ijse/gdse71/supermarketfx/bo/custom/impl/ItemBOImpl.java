@@ -7,20 +7,23 @@ import lk.ijse.gdse71.supermarketfx.dao.custom.ItemDAO;
 import lk.ijse.gdse71.supermarketfx.dto.ItemDto;
 import lk.ijse.gdse71.supermarketfx.dto.OrderDetailsDto;
 import lk.ijse.gdse71.supermarketfx.entity.Item;
+import lk.ijse.gdse71.supermarketfx.exception.DuplicateException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ItemBOImpl implements ItemBO {
     ItemDAO itemDAO = (ItemDAO) DAOFactory.getDaoFactory().getDAO(DAOFactory.DAOTypes.ITEM);
     @Override
-    public ArrayList<String> getAllItemIds() throws SQLException {
+    public List<String> getAllItemIds() throws SQLException {
         return itemDAO.getAllItemIds();
     }
 
 
     @Override
-    public ItemDto findById(String selecteItemId) throws SQLException {
+    public Optional<Item> findById(String selecteItemId) throws SQLException {
         return itemDAO.findById(selecteItemId);
     }
 
@@ -31,14 +34,14 @@ public class ItemBOImpl implements ItemBO {
 
     @Override
     public ArrayList<ItemDto> getAllItems() throws SQLException {
-        ArrayList<Item> items = itemDAO.getAll();
+        ArrayList<Item> items = (ArrayList<Item>) itemDAO.getAll();
         ArrayList<ItemDto> itemDtos = new ArrayList<>();
         for (Item item : items) {
             ItemDto itemDto = new ItemDto(
                     item.getItemId(),
                     item.getItemName(),
                     item.getQuantity(),
-                    item.getQuantity()
+                    item.getUnitPrice()
             );
             itemDtos.add(itemDto);
         }
@@ -46,12 +49,31 @@ public class ItemBOImpl implements ItemBO {
     }
     @Override
     public String getNextItemId() throws SQLException {
-        return itemDAO.getNextId();
+        return generateNewItemId();
     }
 
     @Override
     public boolean saveItem(ItemDto itemDto) throws SQLException {
-        return itemDAO.save(new Item(itemDto.getItemId(), itemDto.getItemName(), itemDto.getQuantity(), itemDto.getQuantity()));
+        try {
+            if (itemDto.getItemId() == null || itemDto.getItemId().isEmpty()) {
+                itemDto.setItemId(generateNewItemId());
+            }
+            Item item = new Item(
+                    itemDto.getItemId(),
+                    itemDto.getItemName(),
+                    itemDto.getQuantity(),
+                    itemDto.getUnitPrice()
+            );
+            itemDAO.save(item);
+            return true;
+        }catch (DuplicateException e){
+            e.getMessage();
+        }catch (Exception e){
+            e.getMessage();
+            e.printStackTrace();
+        }
+        return false;
+//        return itemDAO.save(new Item(itemDto.getItemId(), itemDto.getItemName(), itemDto.getQuantity(), itemDto.getQuantity()));
     }
 
     @Override
@@ -61,6 +83,42 @@ public class ItemBOImpl implements ItemBO {
 
     @Override
     public boolean updateItem(ItemDto itemDto) throws SQLException {
-        return itemDAO.update(new Item(itemDto.getItemId(), itemDto.getItemName(), itemDto.getQuantity(), itemDto.getQuantity()));
+        try {
+            if (itemDto.getItemId() == null || itemDto.getItemId().isEmpty()) {
+                itemDto.setItemId(generateNewItemId());
+            }
+            Item item = new Item(
+                    itemDto.getItemId(),
+                    itemDto.getItemName(),
+                    itemDto.getQuantity(),
+                    itemDto.getUnitPrice()
+            );
+            itemDAO.update(item);
+            return true;
+        }catch (DuplicateException e){
+            e.getMessage();
+        }catch (Exception e){
+            e.getMessage();
+            e.printStackTrace();
+        }
+        return false;
+//        return itemDAO.update(new Item(itemDto.getItemId(), itemDto.getItemName(), itemDto.getQuantity(), itemDto.getQuantity()));
+    }
+
+    @Override
+    public String generateNewItemId() throws SQLException {
+        String lastId = itemDAO.getLastId();
+        if (lastId == null || lastId.isEmpty()) {
+            return "I001";
+        }
+        try {
+            String substring = lastId.substring(0, 1);
+            String substring1 = lastId.substring(1);
+
+            int nextNumber = Integer.parseInt(substring1)+ 1;
+            return String.format("%s%03d", substring, nextNumber);
+        }catch (NumberFormatException | StringIndexOutOfBoundsException e){
+            return "I001";
+        }
     }
 }

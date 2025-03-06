@@ -1,20 +1,28 @@
 package lk.ijse.gdse71.supermarketfx.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
-@Getter
-@Setter
+
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-
+@Data
+@Table(name = "Orders")
+@Entity
 public class Order {
+    @Id
+    @Column(name = "order_id")
     private String orderId;
-    private String customerId;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
     private Date orderDate;
 
-    private ArrayList<OrderDetails> orderDetails;
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetails> orderDetailsList;
 }

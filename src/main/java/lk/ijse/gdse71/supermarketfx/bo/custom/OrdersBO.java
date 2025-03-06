@@ -12,4 +12,5 @@ public interface OrdersBO extends SuperBO {
     boolean saveOrder(OrderDto orderDto) throws SQLException;
      boolean saveOrderDetailsList(ArrayList<OrderDetailsDto> orderDetailsDtos) throws SQLException;
     boolean saveOrderDetail(OrderDetailsDto orderDetailsDto) throws SQLException;
+    String generateNewOrderId() throws SQLException;
 }

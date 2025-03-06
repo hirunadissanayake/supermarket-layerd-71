@@ -7,6 +7,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import lk.ijse.gdse71.supermarketfx.config.FactoryConfiguration;
+import org.hibernate.Session;
 
 public class AppInitializer extends Application {
     @Override
@@ -47,6 +49,9 @@ public class AppInitializer extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+         /*Session session = FactoryConfiguration.getInstance().getSession();
+         session.close();*/
+
+        launch(args); //launch the javaFX application
     }
 }
